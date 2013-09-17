@@ -1,0 +1,56 @@
+#!/usr/bin/env ruby
+require 'bundler/setup'
+require 'thor'
+require 'yaml'
+require 'logger'
+
+
+class OsAccept < Thor
+  @@logger = Logger.new($stdout)
+  desc 'init','initialize: create configfile with ask'
+  option :force, :type => :boolean, :aliases => :f
+  no_tasks do
+    def add_to_admin_config(message, key)
+      say(message)
+      @config[:admin][key.to_sym] = ask('?')
+    end
+
+    def add_to_user_config(message, key)
+      say(message)
+      @config[:user][key.to_sym] = ask('?')
+    end
+  end
+
+  def init
+    file = File.expand_path('../../.os_accept.yml',__FILE__)
+    if File.exists?(file)
+      unless options[:force]
+        @@logger.warn 'ConfigFile already exist. Remove first or use --force option to overwrite.'
+        exit 0
+      else
+        @@logger.warn 'Notice! ConfigFile will overwrite!!'
+      end
+    end
+
+    @config = Hash.new
+    @config[:admin] = Hash.new
+    @config[:user] = Hash.new
+
+
+    # build admin (dummy)
+    add_to_admin_config 'openstack_adminname', 'name'
+
+    # build user
+    add_to_user_config 'openstack_username', 'name'
+    add_to_user_config 'openstack_api_key', 'api_key'
+    add_to_user_config 'openstack_auth_url', 'auth_url'
+    add_to_user_config 'openstack_authtenant_id', 'authtenant_id'
+
+    File.open(file, 'w') do |f|
+      f.write(@config.to_yaml)
+    end
+    @@logger.info 'ConfigFile created.'
+  end
+end
+
+OsAccept.start
