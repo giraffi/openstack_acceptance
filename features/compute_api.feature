@@ -23,3 +23,16 @@ Feature: OpenStack Compute API
     Given I retrieve "Compute" from API
     Then There are at least one flavor
     Then There are at least one keypair
+
+  Scenario: Create and destroy Computer
+    Given I retrieve "Network" from API
+    Given I retrieve "Image" from API
+    Given I retrieve "Compute" from API
+    When A requirement which must be satisfied before create computer
+    And I try to create computer with private nic
+    Then new computer should be ACTIVE
+    When I create floating_ip and associate to new computer
+    Then computer has valid attributes
+    When I try to destroy new computer
+    And  I release floating_ip
+

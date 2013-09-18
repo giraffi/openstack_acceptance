@@ -44,13 +44,12 @@ class OsAccept < Thor
     # build admin (dummy)
     add_to_admin_config 'Input openstack_admin username', 'name'
     add_to_admin_config 'Input openstack_admin_api_key(password)', 'api_key'
-#    add_to_admin_config 'Input openstack_authtenant_id', 'authtenant_id'
 
     # build user
     add_to_member_config 'Input openstack_member_username', 'name'
     add_to_member_config 'Input openstack_member_api_key(password)', 'api_key'
     add_to_member_config 'Input openstack_member_current_tenant', 'tenant'
-#    add_to_member_config 'Input openstack_member_authtenant_id', 'authtenant_id'
+    add_to_member_config 'Input openstack_member_ssh_keyname', 'ssh_key'
 
     File.open(file, 'w') do |f|
       f.write(@config.to_yaml)
