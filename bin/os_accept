@@ -15,9 +15,9 @@ class OsAccept < Thor
       @config[:admin][key.to_sym] = ask('?')
     end
 
-    def add_to_user_config(message, key)
+    def add_to_member_config(message, key)
       say(message)
-      @config[:user][key.to_sym] = ask('?')
+      @config[:member][key.to_sym] = ask('? ')
     end
   end
 
@@ -33,18 +33,24 @@ class OsAccept < Thor
     end
 
     @config = Hash.new
+    @config[:platform] = Hash.new
     @config[:admin] = Hash.new
-    @config[:user] = Hash.new
+    @config[:member] = Hash.new
 
+    # build platform
+    say('Input openstack_auth_url')
+    @config[:platform][:openstack_auth_url] = ask('? ')
 
     # build admin (dummy)
-    add_to_admin_config 'openstack_adminname', 'name'
+    add_to_admin_config 'Input openstack_admin username', 'name'
+    add_to_admin_config 'Input openstack_admin_api_key(password)', 'api_key'
+#    add_to_admin_config 'Input openstack_authtenant_id', 'authtenant_id'
 
     # build user
-    add_to_user_config 'openstack_username', 'name'
-    add_to_user_config 'openstack_api_key', 'api_key'
-    add_to_user_config 'openstack_auth_url', 'auth_url'
-    add_to_user_config 'openstack_authtenant_id', 'authtenant_id'
+    add_to_member_config 'Input openstack_member_username', 'name'
+    add_to_member_config 'Input openstack_member_api_key(password)', 'api_key'
+    add_to_member_config 'Input openstack_member_current_tenant', 'tenant'
+#    add_to_member_config 'Input openstack_member_authtenant_id', 'authtenant_id'
 
     File.open(file, 'w') do |f|
       f.write(@config.to_yaml)
